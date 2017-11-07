@@ -2,7 +2,7 @@ package goggles.macros.interpret
 
 import goggles.macros.errors.{GogglesError, NotEnoughArguments}
 
-import scalaz._
+import cats._
 
 private[goggles] case class ParseState[T,Arg](args: List[Arg], infos: List[OpticInfo[T]])
 
@@ -83,8 +83,9 @@ private[goggles] object Parse {
     }
   }
 
-  implicit def monad[T,Arg] = new Monad[({type f[a]=Parse[T,Arg,a]})#f] {
-    override def bind[A, B](fa: Parse[T,Arg,A])(f: A => Parse[T,Arg,B]): Parse[T,Arg,B] = fa.flatMap(f)
-    override def point[A](a: => A): Parse[T,Arg,A] = pure(a)
+  implicit def monad[T,Arg] = new StackSafeMonad[({type f[a]=Parse[T,Arg,a]})#f] {
+    override def flatMap[A, B](fa: Parse[T,Arg,A])(f: A => Parse[T,Arg,B]): Parse[T,Arg,B] = fa.flatMap(f)
+    override def pure[A](a: A): Parse[T,Arg,A] = pure(a)
+
   }
 }

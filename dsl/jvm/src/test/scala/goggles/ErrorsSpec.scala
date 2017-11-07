@@ -10,7 +10,7 @@ import OpticType._
 
 import Fixture._
 
-import scalaz.Monoid
+import cats.Monoid
 
 class HasArgsMethod { def bogus(a: Int): Int = 0 }
 class HasMultiParamMethod { def bogus()(): Int = 0 }
@@ -143,7 +143,7 @@ class ErrorsSpec extends Specification with ScalaCheck {
     val setter = Setter[Apple,Banana](_ => _ => Apple)
 
     val fold = new Fold[Banana, Carrot] {
-      def foldMap[M: Monoid](f: Carrot => M)(b: Banana): M = Monoid[M].zero
+      def foldMap[M: Monoid](f: Carrot => M)(b: Banana): M = Monoid[M].empty
     }
 
     testGet"$Apple.$setter.$fold" === Left(WrongKindOfOptic(".$fold", "goggles.Fixture.Banana", "goggles.Fixture.Carrot", SetterType, FoldType))

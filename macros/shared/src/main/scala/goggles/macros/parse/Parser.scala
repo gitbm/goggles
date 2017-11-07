@@ -4,7 +4,7 @@ import goggles.macros.errors._
 import goggles.macros.lex.Token
 
 import scala.util.{Try, Success, Failure}
-import scalaz.{Name => _, NonEmptyList}
+import cats.data.NonEmptyList
 
 
 private[goggles] object Parser {
@@ -36,7 +36,7 @@ private[goggles] object Parser {
       parseLensExpr(remaining) match {
         case (Nil, Right(lensExpr)) =>
           val h :: t = (lensExpr :: exprs).reverse
-          Right(ComposedLens(NonEmptyList(h, t: _*)))
+          Right(ComposedLens(NonEmptyList(h, t)))
 
         case (rest, Right(lensExpr)) => loop(rest, lensExpr :: exprs) 
         case (_, Left(err)) => Left(err) 
